@@ -25,12 +25,20 @@ import profiles, {
 import profilesByProject, { getProfiles } from './profilesByProject';
 import links, { getLink } from './links';
 import linksByProject, { getLinks } from './linksByProject';
+import components, {
+    getComponentByKey as nextGetComponentByKey
+} from './components';
+import modulesByProject, {
+    getProjectModules as nextGetProjectModules
+} from './modulesByProject';
 
 const rootReducer = combineReducers({
   profiles,
   profilesByProject,
   links,
-  linksByProject
+  linksByProject,
+  components,
+  modulesByProject
 });
 
 export default rootReducer;
@@ -51,3 +59,14 @@ export const getLinkById = (state, linkId) =>
 export const getProjectLinks = (state, projectKey) =>
     getLinks(state.linksByProject, projectKey)
         .map(linkId => getLinkById(state, linkId));
+
+export const getComponentByKey = (state, componentKey) =>
+    nextGetComponentByKey(state.components, componentKey);
+
+export const getProjectModules = (state, projectKey) => {
+  const moduleKeys = nextGetProjectModules(state.modulesByProject, projectKey);
+  if (moduleKeys == null) {
+    return null;
+  }
+  return moduleKeys.map(moduleKey => getComponentByKey(state, moduleKey));
+};
